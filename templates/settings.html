@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Settings - Task Master{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <!-- Update Profile Card -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h2 class="text-center mb-0">Update Profile</h2>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('settings') }}">
+                        {{ form.csrf_token }}
+                        <input type="hidden" name="action" value="update_profile">
+                        
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input type="text" class="form-control" id="username" name="username" 
+                                   value="{{ current_user.username }}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="current_password">Current Password</label>
+                            <input type="password" class="form-control" id="current_password" 
+                                   name="current_password" required>
+                            <small class="form-text text-muted">
+                                Required to make any changes to your profile.
+                            </small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="new_password">New Password</label>
+                            <input type="password" class="form-control" id="new_password" 
+                                   name="new_password">
+                            <small class="form-text text-muted">
+                                Leave blank if you don't want to change your password.
+                            </small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="confirm_password">Confirm New Password</label>
+                            <input type="password" class="form-control" id="confirm_password" 
+                                   name="confirm_password">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Update Profile</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Delete Account Card -->
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h2 class="text-center mb-0">Delete Account</h2>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <strong>Warning!</strong> This action cannot be undone. All your tasks will be permanently deleted.
+                    </div>
+                    <form method="POST" action="{{ url_for('settings') }}" 
+                          onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.');">
+                        {{ form.csrf_token }}
+                        <input type="hidden" name="action" value="delete_account">
+                        
+                        <div class="form-group">
+                            <label for="confirm_delete_password">Enter Your Password to Confirm</label>
+                            <input type="password" class="form-control" id="confirm_delete_password" 
+                                   name="confirm_delete_password" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-danger">Delete Account</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Password match validation
+    const newPassword = document.getElementById('new_password');
+    const confirmPassword = document.getElementById('confirm_password');
+    
+    function validatePassword() {
+        if (newPassword.value && newPassword.value !== confirmPassword.value) {
+            confirmPassword.setCustomValidity("Passwords don't match");
+        } else {
+            confirmPassword.setCustomValidity('');
+        }
+    }
+
+    newPassword.onchange = validatePassword;
+    confirmPassword.onkeyup = validatePassword;
+});
+</script>
+{% endblock %} 

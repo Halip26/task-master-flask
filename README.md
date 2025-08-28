@@ -1,85 +1,121 @@
-# Task Master Using Python Flask
+# Task Manager Flask Application
 
-This is a simple Flask application for managing your tasks. It allows users to add, delete, and update tasks.
+A Flask-based task management application with both web interface and REST API.
 
 ## Features
 
-- Add new tasks
-- Delete existing tasks
-- Update tasks
-- View all tasks
+- User authentication (register, login, logout)
+- Task management (create, read, update, delete)
+- Task prioritization
+- Due date tracking
+- REST API with Swagger documentation
 
 ## Installation
 
-1. Clone the repository:
+1. Clone the repository
+2. Create a virtual environment:
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
+3. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+4. Initialize the database:
+```bash
+python init_db.py
+```
 
-    ```bash
-    git clone https://github.com/yourusername/task-manager-flask.git
+## Running the Application
+
+```bash
+python app.py
+```
+
+The application will be available at `http://localhost:5000`
+API documentation will be available at `http://localhost:5000/api/docs`
+
+## REST API Documentation
+
+The application provides a REST API for task management. All API endpoints require authentication.
+
+### Authentication
+
+The API uses session-based authentication. You need to log in through the web interface before using the API.
+
+### API Endpoints
+
+#### Tasks
+
+- `GET /tasks/` - List all tasks
+  - Returns: Array of task objects
+  - Status codes: 200 (Success), 401 (Unauthorized)
+
+- `POST /tasks/` - Create a new task
+  - Request body: 
+    ```json
+    {
+        "content": "Task description",
+        "due_date": "YYYY-MM-DD",  // Optional
+        "priority_id": 1  // Optional
+    }
     ```
+  - Returns: Created task object
+  - Status codes: 201 (Created), 400 (Bad Request), 401 (Unauthorized)
 
-2. Navigate to the project directory:
+- `GET /tasks/<id>` - Get a specific task
+  - Returns: Task object
+  - Status codes: 200 (Success), 401 (Unauthorized), 403 (Forbidden), 404 (Not Found)
 
-    ```bash
-    cd task-manager-flask
+- `PUT /tasks/<id>` - Update a task
+  - Request body:
+    ```json
+    {
+        "content": "Updated description",
+        "completed": 1,
+        "due_date": "YYYY-MM-DD",
+        "priority_id": 1
+    }
     ```
+  - Returns: Updated task object
+  - Status codes: 200 (Success), 400 (Bad Request), 401 (Unauthorized), 403 (Forbidden), 404 (Not Found)
 
-3. Create a virtual environment:
+- `DELETE /tasks/<id>` - Delete a task
+  - Status codes: 204 (No Content), 401 (Unauthorized), 403 (Forbidden), 404 (Not Found)
 
-    ```bash
-    python -m venv venv
-    ```
+- `POST /tasks/<id>/toggle` - Toggle task completion status
+  - Returns: Updated task object
+  - Status codes: 200 (Success), 401 (Unauthorized), 403 (Forbidden), 404 (Not Found)
 
-4. Activate the virtual environment:
-    - On Windows:
+### Response Objects
 
-        ```bash
-        venv\Scripts\activate
-        ```
+#### Task Object
 
-    - On macOS/Linux:
+```json
+{
+    "id": 1,
+    "content": "Task description",
+    "completed": 0,
+    "date_created": "2024-01-01T12:00:00",
+    "due_date": "2024-12-31",
+    "priority_id": 1
+}
+```
 
-        ```bash
-        source venv/bin/activate
-        ```
+## Testing
 
-5. Install the required packages:
+To run the tests:
 
-    ```bash
-    pip install -r requirements.txt
-    ```
+```bash
+pytest
+```
 
-## Usage
+To run tests with coverage report:
 
-1. Run the application:
-
-    ```bash
-    python app.py
-    ```
-
-2. Open your web browser and go to `http://127.0.0.1:5000/`.
-
-## Project Structure
-
-- `app.py`: The main application file.
-- `templates/`: Directory containing HTML templates.
-  - `index.html`: Template for displaying tasks.
-  - `update.html`: Template for updating tasks.
-- `task_db.db`: SQLite database file.
-
-## Models
-
-### Todo
-
-- `id`: Integer, primary key.
-- `content`: String, task content.
-- `completed`: Integer, task completion status (default is 0).
-- `date_created`: DateTime, task creation date (default is current UTC time).
-
-## Routes
-
-- `/`: Main page to view and add tasks.
-- `/delete/<int:id>`: Route to delete a task by its ID.
-- `/update/<int:id>`: Route to update a task by its ID.
+```bash
+pytest --cov=app tests/
+```
 
 ## License
 
